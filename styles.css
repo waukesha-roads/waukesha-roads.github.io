@@ -1,0 +1,237 @@
+/* Color palette: red, gold, black, blue */
+:root {
+  --red: #b5232a;
+  --red-dark: #8e1a1f;
+  --gold: #d7a24e;
+  --gold-light: #f3d08c;
+  --gold-dark: #a8772e;
+  --black: #1b1a19;
+  --blue: #2445a8;
+  --ok: #1a8f3c;
+  --bad: #c62828;
+  --ink: #1d1d1f;
+  --muted: #5f6368;
+  --card: #ffffff;
+  --line: #e2e2e2;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: #ddd; }
+#map { position: absolute; inset: 0; cursor: crosshair; background: #f2efe9; }
+#map.sat { background: #333; }
+#map.revealed { cursor: default; }
+.hidden { display: none !important; }
+
+button {
+  font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid #c7c7c7;
+  background: #fff; cursor: pointer;
+}
+button:hover { background: #f3f3f3; }
+button.primary {
+  background: var(--red); border: 2px solid var(--gold); color: #fff; font-weight: 700;
+  letter-spacing: 0.02em; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+}
+button.primary:hover { background: var(--red-dark); }
+button.primary:focus-visible { outline: 3px solid var(--gold-light); outline-offset: 2px; }
+button.primary:disabled { background: #bbb; border-color: #bbb; cursor: not-allowed; box-shadow: none; }
+button:not(.primary):not(.ghost) { border-color: var(--gold); color: var(--black); }
+button:not(.primary):not(.ghost):hover { background: #fbf3e4; }
+button.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+
+/* Full-screen overlays (setup / summary) */
+.overlay {
+  position: absolute; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center;
+  background: rgba(27, 26, 25, 0.55); padding: 16px; overflow-y: auto;
+}
+.card {
+  background: var(--card); border-radius: 14px; padding: 22px 24px; width: 100%; max-width: 420px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); margin: auto;
+}
+.card.wide { max-width: 560px; }
+.card h1 { margin: 0 0 4px; font-size: 22px; color: var(--red); }
+
+/* Header: black band with gold lettering and a red rule */
+.card.branded { padding-top: 0; overflow: hidden; border-top: 4px solid var(--red); }
+.brand {
+  display: flex; align-items: center; gap: 14px; margin: 0 -24px 16px; padding: 14px 24px;
+  background: var(--black); border-bottom: 3px solid var(--gold);
+}
+.brand .dept {
+  color: var(--gold); text-transform: uppercase; letter-spacing: 0.12em; font-size: 12px; font-weight: 700;
+}
+.brand h1 { color: var(--gold-light); margin: 2px 0 0; font-size: 26px; letter-spacing: 0.02em; }
+.card.wide .brand h1 { font-size: 21px; }
+.sub { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
+fieldset { border: 1px solid var(--line); border-radius: 10px; margin: 0 0 12px; padding: 10px 12px; }
+legend { font-weight: 700; font-size: 14px; padding: 0 4px; color: var(--black); }
+fieldset:not(.stakes) legend { border-left: 3px solid var(--gold); padding-left: 6px; }
+input[type="checkbox"] { accent-color: var(--red); }
+fieldset label { display: block; padding: 4px 0; cursor: pointer; }
+.count { color: var(--muted); font-size: 13px; }
+fieldset.stakes { border: 2px solid var(--red); background: #fdf3ea; }
+fieldset.stakes legend { color: var(--red); }
+.addr-label { color: var(--red); }
+select { font: inherit; padding: 6px 8px; border-radius: 6px; border: 1px solid #c7c7c7; width: 100%; background: #fff; }
+input[type="range"] { width: 100%; accent-color: var(--red); }
+.hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+#poolInfo { margin: 4px 0 12px; }
+#startBtn { width: 100%; padding: 12px; font-size: 16px; }
+.row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+
+/* Top prompt bar */
+#hud {
+  position: absolute; z-index: 900; top: 12px; left: 50%; transform: translateX(-50%);
+  width: min(760px, calc(100% - 24px)); background: var(--black); color: #fff; border-radius: 12px;
+  border-bottom: 3px solid var(--gold);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2); padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.hud-left { flex: 1; min-width: 0; }
+.progress { font-size: 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
+.prompt { font-size: 20px; }
+.prompt strong { color: var(--gold-light); }
+#hud button { background: var(--red); border: 1px solid var(--gold); color: #fff; }
+#hud button:hover { background: var(--red-dark); }
+#hud button.ghost { background: transparent; border-color: transparent; color: #cfc6b8; }
+#hud button.ghost:hover { color: #fff; }
+.hud-right { display: flex; align-items: center; gap: 8px; }
+.score { font-weight: 700; margin-right: 4px; color: var(--gold-light); }
+.badge {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; vertical-align: middle; font-weight: 700;
+  background: var(--blue); color: #fff; border-radius: 999px; padding: 2px 8px;
+}
+
+/* Guess result panel */
+.panel {
+  position: absolute; z-index: 900; bottom: 24px; left: 50%; transform: translateX(-50%);
+  width: min(460px, calc(100% - 24px)); background: var(--card); border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); padding: 14px 16px; border-top: 4px solid var(--gold);
+}
+.fb-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.fb-title.ok { color: var(--ok); }
+.fb-title.bad { color: var(--bad); }
+#fbBody { font-size: 14px; margin-bottom: 12px; line-height: 1.45; }
+#fbBody dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 8px 0 0; }
+#fbBody dt { color: var(--muted); }
+#fbBody dd { margin: 0; }
+#nextBtn { width: 100%; }
+
+/* Summary list */
+#sumList { padding-left: 22px; margin: 0; max-height: 50vh; overflow-y: auto; }
+#sumList li { padding: 6px 4px; border-bottom: 1px solid var(--line); cursor: pointer; }
+#sumList li:hover { background: #fbf3e4; }
+#sumList .mark { font-weight: 700; margin-right: 6px; }
+#sumList .ok { color: var(--ok); }
+#sumList .bad { color: var(--bad); }
+#sumList .dist { color: var(--muted); font-size: 13px; }
+
+/* Map style toggle */
+.map-ctrl { position: absolute; z-index: 800; right: 12px; bottom: 28px; }
+.map-ctrl select { width: auto; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); }
+
+/* Road name label shown after a guess */
+.road-label {
+  background: rgba(255, 255, 255, 0.92); border: none; border-radius: 6px; font-weight: 700;
+  font-size: 13px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); padding: 3px 8px;
+}
+
+@media (max-width: 600px) {
+  .prompt { font-size: 17px; }
+  .brand h1 { font-size: 22px; }
+  #hud { top: 8px; padding: 8px 10px; }
+  .panel { bottom: 12px; }
+  .map-ctrl { bottom: auto; top: 110px; }
+}
+
+/* "I was right" dispute + log */
+.dispute { margin: 0 0 10px; }
+.dispute-btn { width: 100%; background: #fff; border: 1px dashed var(--gold-dark) !important; color: var(--gold-dark) !important; font-weight: 600; }
+.dispute-btn:hover { background: #fbf3e4; }
+.dispute textarea {
+  width: 100%; font: inherit; font-size: 14px; padding: 6px 8px; margin-top: 4px; resize: vertical;
+  border: 1px solid var(--gold); border-radius: 6px;
+}
+.row.tight { margin-top: 6px; }
+#disputeDone { color: var(--ok); font-weight: 600; font-size: 13px; }
+.log-bar {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center;
+  margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted);
+}
+button.link {
+  background: none !important; border: none !important; padding: 2px 4px; font-size: 12px;
+  color: var(--red) !important; text-decoration: underline; cursor: pointer;
+}
+button.link:disabled { color: #aaa !important; text-decoration: none; cursor: default; }
+
+/* ---------- "All streets" fire effect (subtle) ---------- */
+/* Custom slider so the knob can glow */
+#qcount { -webkit-appearance: none; appearance: none; height: 22px; background: transparent; }
+#qcount::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--red) var(--fill, 10%), #e3ddd4 var(--fill, 10%));
+}
+#qcount::-moz-range-track { height: 6px; border-radius: 3px; background: #e3ddd4; }
+#qcount::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--red); }
+#qcount::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; margin-top: -6px; border-radius: 50%;
+  background: var(--red); border: 2px solid var(--gold); cursor: pointer;
+}
+#qcount::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--red); border: 2px solid var(--gold); cursor: pointer; }
+
+/* On fire: ember track, glowing knob */
+.on-fire #qcount::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, #b5232a, #e8541c 60%, #f5a623);
+}
+.on-fire #qcount::-moz-range-progress { background: linear-gradient(90deg, #b5232a, #e8541c 60%, #f5a623); }
+.on-fire #qcount::-webkit-slider-thumb { background: #f5a623; border-color: #fff3c4; animation: ember 1.1s ease-in-out infinite alternate; }
+.on-fire #qcount::-moz-range-thumb { background: #f5a623; border-color: #fff3c4; animation: ember 1.1s ease-in-out infinite alternate; }
+.on-fire #qcountLabel { color: #d9480f; }
+
+/* On fire: Start button smolders with small flames along its top edge */
+#startBtn { position: relative; }
+.on-fire #startBtn {
+  background: linear-gradient(0deg, #8e1a1f, #b5232a 45%, #d8431b);
+  border-color: #f5a623;
+  animation: smolder 1.6s ease-in-out infinite alternate;
+}
+.on-fire #startBtn::before, .on-fire #startBtn::after {
+  content: ""; position: absolute; left: 4%; right: 4%; bottom: calc(100% - 4px); height: 22px; pointer-events: none;
+  transform-origin: bottom center; filter: blur(0.6px);
+}
+.on-fire #startBtn::before {
+  background:
+    radial-gradient(ellipse 9px 20px at 6% 100%, #ffd27a 0 25%, #f5a623 45%, rgba(232,84,28,0.6) 65%, transparent 80%),
+    radial-gradient(ellipse 8px 15px at 19% 100%, #f5a623 0 30%, rgba(232,84,28,0.7) 60%, transparent 80%),
+    radial-gradient(ellipse 10px 22px at 33% 100%, #ffd27a 0 25%, #f5a623 45%, rgba(232,84,28,0.6) 65%, transparent 80%),
+    radial-gradient(ellipse 8px 16px at 48% 100%, #f5a623 0 30%, rgba(232,84,28,0.7) 60%, transparent 80%),
+    radial-gradient(ellipse 10px 21px at 63% 100%, #ffd27a 0 25%, #f5a623 45%, rgba(232,84,28,0.6) 65%, transparent 80%),
+    radial-gradient(ellipse 8px 15px at 78% 100%, #f5a623 0 30%, rgba(232,84,28,0.7) 60%, transparent 80%),
+    radial-gradient(ellipse 9px 20px at 93% 100%, #ffd27a 0 25%, #f5a623 45%, rgba(232,84,28,0.6) 65%, transparent 80%);
+  animation: flicker 0.9s ease-in-out infinite alternate;
+}
+.on-fire #startBtn::after {
+  background:
+    radial-gradient(ellipse 7px 14px at 12% 100%, rgba(232,84,28,0.85) 0 35%, transparent 75%),
+    radial-gradient(ellipse 7px 17px at 26% 100%, rgba(245,166,35,0.85) 0 35%, transparent 75%),
+    radial-gradient(ellipse 7px 13px at 41% 100%, rgba(232,84,28,0.85) 0 35%, transparent 75%),
+    radial-gradient(ellipse 7px 17px at 56% 100%, rgba(245,166,35,0.85) 0 35%, transparent 75%),
+    radial-gradient(ellipse 7px 14px at 71% 100%, rgba(232,84,28,0.85) 0 35%, transparent 75%),
+    radial-gradient(ellipse 7px 16px at 86% 100%, rgba(245,166,35,0.85) 0 35%, transparent 75%);
+  animation: flicker 1.3s ease-in-out -0.4s infinite alternate-reverse;
+}
+@keyframes ember {
+  from { box-shadow: 0 0 4px 1px rgba(245, 166, 35, 0.6); }
+  to   { box-shadow: 0 0 10px 4px rgba(232, 84, 28, 0.75); }
+}
+@keyframes smolder {
+  from { box-shadow: 0 0 6px 1px rgba(232, 84, 28, 0.45), inset 0 -3px 0 rgba(0, 0, 0, 0.2); }
+  to   { box-shadow: 0 0 16px 4px rgba(245, 166, 35, 0.55), inset 0 -3px 0 rgba(0, 0, 0, 0.2); }
+}
+@keyframes flicker {
+  0%   { transform: scaleY(0.75) skewX(-2deg); opacity: 0.75; }
+  50%  { transform: scaleY(1.05) skewX(2deg);  opacity: 1; }
+  100% { transform: scaleY(0.85) skewX(-1deg); opacity: 0.85; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .on-fire #startBtn, .on-fire #startBtn::before, .on-fire #startBtn::after,
+  .on-fire #qcount::-webkit-slider-thumb, .on-fire #qcount::-moz-range-thumb { animation: none; }
+}

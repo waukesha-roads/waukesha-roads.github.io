@@ -1,0 +1,138 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Waukesha Street Trainer</title>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="styles.css?v=202611081200" />
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Setup screen -->
+  <div id="setup" class="overlay">
+    <div class="card branded">
+      <header class="brand">
+        <div class="brand-text">
+          <div class="dept">Waukesha</div>
+          <h1>Street Trainer</h1>
+        </div>
+      </header>
+      <p class="sub">A street is named &mdash; click it on the map. No street names are shown until you guess.</p>
+
+      <fieldset>
+        <legend>Street types</legend>
+        <label><input type="checkbox" name="cat" value="Primary" checked /> Primary <span class="count" data-cat="Primary"></span></label>
+        <label><input type="checkbox" name="cat" value="Secondary" checked /> Secondary <span class="count" data-cat="Secondary"></span></label>
+        <label><input type="checkbox" name="cat" value="Tertiary" /> Tertiary <span class="count" data-cat="Tertiary"></span></label>
+        <label><input type="checkbox" name="cat" value="Dead end" /> Courts &amp; dead ends <span class="count" data-cat="Dead end"></span></label>
+        <div class="hint">Secondary streets follow each station's own list.</div>
+      </fieldset>
+
+      <fieldset class="stakes">
+        <legend>Up the stakes</legend>
+        <label><input type="checkbox" id="addrMode" /> <strong>Address mode</strong> &mdash; find an exact address, like <em>2000 S West Ave</em></label>
+        <div class="hint">Click the building (zoom in to see buildings) or the road in front of it. Uses real 911 address points; accuracy is more generous.</div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Running area</legend>
+        <select id="district"></select>
+        <div class="hint">Station areas from Waukesha County GIS.</div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Number of questions: <strong id="qcountLabel">10</strong></legend>
+        <input type="range" id="qcount" min="5" max="51" step="1" value="10" />
+        <div class="hint" id="qcountHint">Slide all the way right for every street.</div>
+      </fieldset>
+
+      <fieldset id="accuracyBox" class="hidden">
+        <legend>Address accuracy</legend>
+        <select id="tolerance">
+          <option value="easy" selected>Easy</option>
+          <option value="normal">Normal</option>
+          <option value="strict">Strict</option>
+        </select>
+      </fieldset>
+
+      <div id="poolInfo" class="hint"></div>
+      <button id="startBtn" class="primary">Start</button>
+      <div id="logBar" class="log-bar">
+        <span id="logCount">Answer disputes: 0</span>
+        <button id="logDownload" type="button" class="link">Download log</button>
+        <button id="logClear" type="button" class="link">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- In-game prompt bar -->
+  <div id="hud" class="hidden">
+    <div class="hud-left">
+      <div class="progress" id="progress"></div>
+      <div class="prompt">Find: <strong id="target"></strong> <span id="targetCat" class="badge"></span></div>
+    </div>
+    <div class="hud-right">
+      <span id="score" class="score"></span>
+      <button id="giveUpBtn">Show me</button>
+      <button id="quitBtn" class="ghost">Quit</button>
+    </div>
+  </div>
+
+  <!-- Result of one guess -->
+  <div id="feedback" class="panel hidden">
+    <div id="fbTitle" class="fb-title"></div>
+    <div id="fbBody"></div>
+    <!-- Player thinks the answer is wrong: log it for review -->
+    <div id="dispute" class="dispute hidden">
+      <button id="disputeBtn" class="dispute-btn" type="button">I was right</button>
+      <div id="disputeForm" class="hidden">
+        <label for="disputeNote" class="hint">What's wrong with this answer? (optional)</label>
+        <textarea id="disputeNote" rows="2" placeholder="e.g. That building is 2000 S West Ave, the map has it wrong"></textarea>
+        <div class="row tight">
+          <button id="disputeCancel" type="button" class="ghost">Cancel</button>
+          <button id="disputeSave" type="button">Save to log</button>
+        </div>
+      </div>
+      <div id="disputeDone" class="hint hidden">Logged for review. Thanks.</div>
+    </div>
+    <button id="nextBtn" class="primary">Next</button>
+  </div>
+
+  <!-- End-of-round summary -->
+  <div id="summary" class="overlay hidden">
+    <div class="card wide branded">
+      <header class="brand">
+        <div class="brand-text">
+          <div class="dept">Round complete</div>
+          <h1 id="sumTitle"></h1>
+        </div>
+      </header>
+      <p class="sub">Click a street to see it on the map.</p>
+      <ol id="sumList"></ol>
+      <div class="row">
+        <button id="retryMissedBtn">Retry missed</button>
+        <button id="againBtn" class="primary">New round</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="basemapToggle" class="map-ctrl">
+    <select id="basemap" title="Map style">
+      <option value="streets">Street map</option>
+      <option value="satellite">Satellite</option>
+    </select>
+  </div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="data/boundary.js?v=202611081200"></script>
+  <script src="data/districts.js?v=202611081200"></script>
+  <script src="data/network.js?v=202611081200"></script>
+  <script src="data/features.js?v=202611081200"></script>
+  <script src="data/streets.js?v=202611081200"></script>
+  <script src="data/addresses.js?v=202611081200"></script>
+  <script src="data/buildings.js?v=202611081200"></script>
+  <script src="app.js?v=202611081200"></script>
+</body>
+</html>

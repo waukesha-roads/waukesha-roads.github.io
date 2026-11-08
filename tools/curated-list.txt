@@ -1,0 +1,147 @@
+# Curated street categories (Nov 2026).
+# [Primary] = primary everywhere; [Secondary] = secondary wherever the road runs;
+# [Station N] = secondary streets for that station's area only.
+# Everything else is Tertiary, except courts/circles and dead-end streets ("Courts & dead ends").
+# Used by tools/apply-curated-list.mjs to set the category column of data/streets.csv.
+
+[Primary]
+Arcadian Ave.
+E. Broadway
+W. Broadway
+E. College Ave
+W. College Ave
+Delafield St
+N. East Ave
+S. East Ave
+N. Grand Ave
+S. Grand Ave
+N. Grandview Blvd
+S. Grandview Blvd
+Madison St
+E. Main St
+W. Main St
+E. Moreland Blvd
+N. Moreland Blvd
+S. Moreland Blvd
+W. Moreland Blvd
+Northview Rd
+Pewaukee Rd
+N. Prairie Ave
+S. Prairie Ave
+E. Racine Ave
+N. Racine Ave
+E. St. Paul Ave
+W. St. Paul Ave
+Silvernail Rd
+Summit Ave
+E. Sunset Dr
+W. Sunset Dr
+N. West Ave
+S. West Ave
+Les Paul Pkwy
+Hwy 59 Arcadian Ave
+Hwy 164
+I-94
+
+# Secondary in every station they run through. A name without N/S/E/W
+# here also covers its North/South/East/West parts (Hartwell = N + S Hartwell).
+[Secondary]
+Bluemound Rd
+MacArthur Rd
+Hartwell Ave
+Big Bend Rd
+Sentry Dr
+Springdale Rd
+
+[Station 1]
+N. Barstow St.
+NW Barstow St
+Cambridge Ave.
+S. Charles St.
+Dopp St
+Dunbar Ave
+Erin Ln.
+Garfield Ave.
+E. Laflin Ave
+N. Hine Ave
+S. Hine Ave
+Joellen Dr
+Lemira Ave
+E. North St
+W. North St
+Scott Ave
+Michigan Ave
+N. Washington Ave
+S. Washington Ave
+
+[Station 2]
+Avalon Dr
+Butler Dr
+Downing Dr
+Fleetfoot Dr
+N. Greenfield Ave
+S. Greenfield Ave
+Greenway Terrace
+Highland Ave
+Lincoln Ave
+Manhattan Dr
+Murray Ave
+Pearl St
+Penhurst Way
+Wolf Rd
+Rempe Dr
+Guthrie Rd
+E. Roberta Ave
+Ruben Dr
+Saratoga Rd
+Sweetbriar Dr
+Tenny Ave
+E. Wabash Ave
+
+[Station 3]
+Chapman Dr
+Cottonwood Dr
+Debbie Dr
+Dixie Dr
+Fox River Pkwy
+Garfield Ave
+Haymarket Rd
+Oakdale Dr
+Richard St
+Rivers Crossing Dr
+River Place Blvd
+River Valley Rd
+School Dr
+Victoria Dr
+Wisteria Ln
+
+[Station 4]
+Aldoro Dr
+Birch Dr
+Easy St
+Emslie Dr
+Gascoigne Dr
+Irving Pl
+Magnolia Dr
+Pebble Valley Rd
+N. University Dr
+Western Ave
+Westowne Ave
+Woodburn Rd
+
+[Station 5]
+Cambridge Ave
+Cherrywood Dr
+Coldwater Creek Dr
+N. Comanche Ln
+S. Comanche Ln
+Fiddler's Creek Dr
+Greenmeadow Dr
+Meadowbrook Rd
+Michigan Ave
+Minot Ln
+Pendleton Pl
+Rolling Ridge Dr
+N. University Dr
+Woodland Hills Dr
+Woodridge Ln
