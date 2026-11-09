@@ -114,8 +114,8 @@
   // ------------------------------------------------------------ map
   const map = L.map("map", { zoomControl: false, doubleClickZoom: false, minZoom: 12, maxZoom: 19, preferCanvas: true });
   L.control.zoom({ position: "bottomleft" }).addTo(map);
-  const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services/";
-  const ATTR = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  const ATTR = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors (ODbL)';
+  const BLDG_ATTR = "Buildings: Microsoft footprints (ODbL) via Waukesha County";
 
   // "Street map" is drawn entirely from our own OSM data (water, parks, rail, roads) so there are
   // NO labels at any zoom. Third-party "no label" basemaps still print street names when zoomed in.
@@ -131,7 +131,7 @@
     L.polyline(MAP_FEATURES.river, { ...fopts, color: "#aad3df", weight: 4 }),
     L.polyline(MAP_FEATURES.rail, { ...fopts, color: "#9a9a9a", weight: 2, dashArray: "8 5" }),
   ]);
-  drawnBase.getAttribution = () => ATTR + " | Buildings &copy; Waukesha County";
+  drawnBase.getAttribution = () => ATTR + " | " + BLDG_ATTR;
 
   // Building footprints (street map only, when zoomed in). Decoded from integer offsets and grouped
   // into ~1 km cells so the canvas only redraws cells on screen.
@@ -161,14 +161,85 @@
   const inBuilding = (p, i) => i >= 0 && BLDG[i] && BLDG[i].filter((r) => inRing(p, r)).length % 2 === 1;
   const basemaps = {
     streets: drawnBase,
-    satellite: L.tileLayer(ESRI + "World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-      attribution: ATTR + " | Imagery &copy; Esri", maxZoom: 19, maxNativeZoom: 19,
+    // USGS National Map aerial imagery (public domain). Native to zoom 16, enlarged past that.
+    satellite: L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}", {
+      attribution: ATTR + ' | Imagery: <a href="https://www.usgs.gov/programs/national-geospatial-program/national-map">USGS The National Map</a>',
+      maxZoom: 19, maxNativeZoom: 16,
     }),
   };
-  // Street names - only added to the map after a guess.
-  const labels = L.tileLayer(ESRI + "Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
-    maxZoom: 19, maxNativeZoom: 16, pane: "shadowPane",
-  });
+
+  // Street names - only added to the map after a guess. Drawn from our own street data along each
+  // road and turned to follow it; names that would overlap one already placed are skipped.
+  const LABEL_ABBR = {
+    North: "N", South: "S", East: "E", West: "W", Northwest: "NW", Northeast: "NE", Southwest: "SW", Southeast: "SE",
+    Avenue: "Ave", Street: "St", Drive: "Dr", Road: "Rd", Boulevard: "Blvd", Court: "Ct", Lane: "Ln", Parkway: "Pkwy",
+    Place: "Pl", Circle: "Cir", Terrace: "Ter", Trail: "Trl", Highway: "Hwy", Saint: "St", Crossing: "Xing", Square: "Sq",
+  };
+  const shortName = (n) => n.split(" ").map((w) => LABEL_ABBR[w] || w).join(" ");
+  const CAT_RANK = { Primary: 0, Secondary: 1, Tertiary: 2, "Dead end": 3 };
+  const LABEL_SRC = STREET_INDEX
+    .map((s) => ({
+      text: shortName(s.name),
+      rank: CAT_RANK[s.category] ?? 3,
+      lines: s.lines.map((l) => {
+        const lats = l.map((p) => p[0]), lons = l.map((p) => p[1]);
+        return { pts: l, bounds: L.latLngBounds([Math.min(...lats), Math.min(...lons)], [Math.max(...lats), Math.max(...lons)]) };
+      }),
+    }))
+    .sort((a, b) => a.rank - b.rank); // big roads get first pick of the space
+  map.createPane("labelPane").style.zIndex = 460; // above roads and the answer highlight
+  map.getPane("labelPane").style.pointerEvents = "none";
+  const labels = L.layerGroup();
+  const LABEL_GAP = 420; // px between repeats of a name along the same road
+  function drawLabels() {
+    labels.clearLayers();
+    const view = map.getBounds().pad(0.05);
+    const size = map.getSize();
+    const font = map.getZoom() >= 17 ? 13 : 12;
+    const taken = []; // screen boxes already used
+    const free = (b) => taken.every((t) => b[2] < t[0] || b[0] > t[2] || b[3] < t[1] || b[1] > t[3]);
+    for (const s of LABEL_SRC) {
+      const w = s.text.length * font * 0.6 + 8; // rough text width in px
+      for (const line of s.lines) {
+        if (!view.intersects(line.bounds)) continue;
+        const px = line.pts.map((p) => map.latLngToContainerPoint(p));
+        const cum = [0];
+        for (let i = 1; i < px.length; i++) cum.push(cum[i - 1] + px[i].distanceTo(px[i - 1]));
+        const len = cum[cum.length - 1];
+        if (len < w) continue;
+        const at = (d) => { // point at distance d along the line
+          let i = 1;
+          while (i < cum.length - 1 && cum[i] < d) i++;
+          const t = (d - cum[i - 1]) / (cum[i] - cum[i - 1] || 1);
+          return L.point(px[i - 1].x + (px[i].x - px[i - 1].x) * t, px[i - 1].y + (px[i].y - px[i - 1].y) * t);
+        };
+        for (let d = w / 2; d <= len - w / 2; d += w / 4) {
+          const a = at(d - w / 2), b = at(d + w / 2), c = at(d);
+          if (a.distanceTo(b) < w * 0.92) continue; // too curvy here
+          if (c.x < 0 || c.y < 0 || c.x > size.x || c.y > size.y) continue;
+          let ang = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
+          if (ang > 90) ang -= 180;
+          if (ang < -90) ang += 180;
+          const r = (ang * Math.PI) / 180;
+          const hw = (Math.abs(Math.cos(r)) * w + Math.abs(Math.sin(r)) * font) / 2 + 2;
+          const hh = (Math.abs(Math.sin(r)) * w + Math.abs(Math.cos(r)) * font) / 2 + 2;
+          const box = [c.x - hw, c.y - hh, c.x + hw, c.y + hh];
+          if (!free(box)) continue;
+          taken.push(box);
+          labels.addLayer(L.marker(map.containerPointToLatLng(c), {
+            pane: "labelPane", interactive: false, keyboard: false,
+            icon: L.divIcon({
+              className: "street-name", iconSize: [0, 0],
+              html: `<span style="font-size:${font}px;transform:translate(-50%,-50%) rotate(${ang.toFixed(1)}deg)">${esc(s.text)}</span>`,
+            }),
+          }));
+          d += LABEL_GAP; // next copy of this name further along
+        }
+      }
+    }
+  }
+  labels.on("add", drawLabels);
+  map.on("zoomend moveend resize", () => { if (map.hasLayer(labels)) drawLabels(); });
 
   // Our own drawing of every named road (no names), so roads are crisp and match the click test.
   const roadRenderer = L.canvas({ padding: 0.5 });
