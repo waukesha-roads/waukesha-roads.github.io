@@ -149,8 +149,6 @@ input[type="range"] { width: 100%; accent-color: var(--red); }
   .map-ctrl { bottom: auto; top: 110px; }
 }
 
-.disclaimer { margin: 10px 0 0; font-size: 11px; line-height: 1.4; color: var(--muted); text-align: center; }
-
 /* ---------- "All streets" fire effect (subtle) ---------- */
 /* Custom slider so the knob can glow */
 #qcount { -webkit-appearance: none; appearance: none; height: 22px; background: transparent; }
