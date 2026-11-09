@@ -427,12 +427,8 @@
       const n = poolFor({ ...st, cats: [el.dataset.cat] }).length;
       el.textContent = `(${n})`;
     });
-    const pool = poolFor(st);
-    const what = st.mode === "address" ? "streets with addresses" : "streets";
-    $("poolInfo").textContent = pool.length
-      ? `${pool.length} ${what} match.` + (pool.length < st.count ? ` Round will be ${pool.length} questions.` : "")
-      : "No streets match - pick at least one street type.";
-    $("startBtn").disabled = !pool.length;
+    // the counts next to each street type show the pool; Start just needs something to ask
+    $("startBtn").disabled = !poolSize;
     showDistrict(st.district);
   }
   document.querySelectorAll("#setup input, #setup select").forEach((el) => el.addEventListener("input", refreshSetup));

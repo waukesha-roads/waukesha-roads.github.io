@@ -80,7 +80,6 @@ fieldset.stakes legend { color: var(--red); }
 select { font: inherit; padding: 6px 8px; border-radius: 6px; border: 1px solid #c7c7c7; width: 100%; background: #fff; }
 input[type="range"] { width: 100%; accent-color: var(--red); }
 .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
-#poolInfo { margin: 4px 0 12px; }
 #startBtn { width: 100%; padding: 12px; font-size: 16px; }
 .row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
 
