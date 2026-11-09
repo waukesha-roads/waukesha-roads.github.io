@@ -88,9 +88,5 @@ node tools/fetch-buildings.mjs
 node tools/build-data.mjs
 ```
 
-## "I was right" log
-After a wrong (or skipped) answer, players can press **I was right** and add an optional note.
-Entries are saved in that computer's browser (there is no server). On the home screen, under
-Start: **Download log** saves a CSV (opens in Excel) with the question, where they clicked, the
-answer location, distance, accuracy setting, the note, and Google Maps links for both spots.
-**Clear** deletes the log on that computer (download it first). Each laptop/browser keeps its own log.
+## Reporting a wrong answer
+If the map or an answer looks wrong, take a screenshot of the answer card and send it in.

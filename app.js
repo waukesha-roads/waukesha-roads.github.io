@@ -621,97 +621,12 @@
     </dl>`;
     $("fbBody").innerHTML = html;
     $("nextBtn").textContent = game.i + 1 < game.questions.length ? "Next" : "See results";
-    resetDispute(!res.correct);
     $("feedback").classList.remove("hidden");
     $("nextBtn").focus();
   }
 
-  // ------------------------------------------------------------ "I was right" dispute log
-  // Kept in this browser's local storage (the app has no server). Download it as a CSV from the
-  // home screen to review answers that may be wrong in the data.
-  const LOG_KEY = "waukeshaStreetTrainer.disputes.v1";
-  function readLog() {
-    try { return JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); } catch { return []; }
-  }
-  function writeLog(list) {
-    try { localStorage.setItem(LOG_KEY, JSON.stringify(list)); return true; } catch { return false; }
-  }
-  function refreshLogBar() {
-    const n = readLog().length;
-    $("logCount").textContent = `Answer disputes: ${n}`;
-    $("logDownload").disabled = !n;
-    $("logClear").disabled = !n;
-  }
-
-  function resetDispute(show) {
-    $("dispute").classList.toggle("hidden", !show);
-    $("disputeBtn").classList.remove("hidden");
-    $("disputeForm").classList.add("hidden");
-    $("disputeDone").classList.add("hidden");
-    $("disputeNote").value = "";
-  }
-  $("disputeBtn").addEventListener("click", () => {
-    $("disputeBtn").classList.add("hidden");
-    $("disputeForm").classList.remove("hidden");
-    $("disputeNote").focus();
-  });
-  $("disputeCancel").addEventListener("click", () => resetDispute(true));
-  $("disputeSave").addEventListener("click", () => {
-    const r = game.results[game.results.length - 1];
-    const q = r.q;
-    const r5 = (n) => Math.round(n * 1e5) / 1e5;
-    const answerAt = q.addr ? q.addr.at : nearestOnLines(r.click || q.street.cityLines[0][0], q.street.lines).point;
-    const entry = {
-      time: new Date().toISOString(),
-      question: questionTitle(q),
-      type: q.addr ? "address" : "street",
-      street: q.street.name,
-      category: catOf(q),
-      station: q.addr ? areaOf(q.addr.at) : q.street.districts.join(" / "),
-      result: r.skipped ? "skipped" : "marked wrong",
-      distance_m: r.dist == null ? "" : Math.round(r.dist),
-      clicked_street: r.clickedAny || "",
-      click_lat: r.click ? r5(r.click[0]) : "",
-      click_lon: r.click ? r5(r.click[1]) : "",
-      answer_lat: r5(answerAt[0]),
-      answer_lon: r5(answerAt[1]),
-      accuracy: q.addr ? `${ACCURACY.address[game.level]} m` : `${STREET_TOLERANCE} m`,
-      note: $("disputeNote").value.trim(),
-    };
-    const list = readLog();
-    list.push(entry);
-    if (!writeLog(list)) { alert("Could not save to the log in this browser."); return; }
-    $("disputeForm").classList.add("hidden");
-    $("disputeDone").classList.remove("hidden");
-    refreshLogBar();
-    $("nextBtn").focus();
-  });
-  // keep Enter/Space inside the note box from jumping to the next question
-  $("disputeNote").addEventListener("keydown", (e) => e.stopPropagation());
-
-  const LOG_COLUMNS = ["time", "question", "type", "street", "category", "station", "result", "distance_m",
-    "clicked_street", "click_lat", "click_lon", "answer_lat", "answer_lon", "accuracy", "note", "click_map", "answer_map"];
-  $("logDownload").addEventListener("click", () => {
-    const gm = (la, lo) => (la === "" ? "" : `https://www.google.com/maps?q=${la},${lo}`);
-    const rows = readLog().map((e) => ({ ...e, click_map: gm(e.click_lat, e.click_lon), answer_map: gm(e.answer_lat, e.answer_lon) }));
-    const cell = (v) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
-    const csv = [LOG_COLUMNS.join(","), ...rows.map((r) => LOG_COLUMNS.map((c) => cell(r[c])).join(","))].join("\r\n");
-    const blob = new Blob(["﻿" + csv], { type: "text/csv" }); // BOM so Excel reads it as UTF-8
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `street-trainer-disputes-${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-  });
-  $("logClear").addEventListener("click", () => {
-    const n = readLog().length;
-    if (n && confirm(`Delete all ${n} logged disputes from this computer? Download the log first if you need it.`)) {
-      writeLog([]);
-      refreshLogBar();
-    }
-  });
-  refreshLogBar();
+  // The old "I was right" log was kept in browser storage; clear any leftovers.
+  try { localStorage.removeItem("waukeshaStreetTrainer.disputes.v1"); } catch {}
 
   const areaOf = (p) => (DISTRICTS.find((d) => inDistrict(p, d)) || { name: "-" }).name;
 
@@ -782,7 +697,6 @@
 
   // Enter / Space advances after a guess
   document.addEventListener("keydown", (e) => {
-    if (e.target.closest && e.target.closest("#dispute")) return; // let the dispute buttons work normally
     if ((e.key === "Enter" || e.key === " ") && game && game.answered && !$("feedback").classList.contains("hidden")) {
       e.preventDefault();
       $("nextBtn").click();

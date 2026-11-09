@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Waukesha Street Trainer</title>
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
-  <link rel="stylesheet" href="styles.css?v=202611091215" />
+  <link rel="stylesheet" href="styles.css?v=202611091300" />
 </head>
 <body>
   <div id="map"></div>
@@ -60,11 +60,6 @@
       <div id="poolInfo" class="hint"></div>
       <button id="startBtn" class="primary">Start</button>
       <p class="disclaimer">Practice aid only &mdash; not for navigation or dispatch. Map data may be out of date; always rely on official maps and CAD.</p>
-      <div id="logBar" class="log-bar">
-        <span id="logCount">Answer disputes: 0</span>
-        <button id="logDownload" type="button" class="link">Download log</button>
-        <button id="logClear" type="button" class="link">Clear</button>
-      </div>
     </div>
   </div>
 
@@ -85,19 +80,6 @@
   <div id="feedback" class="panel hidden">
     <div id="fbTitle" class="fb-title"></div>
     <div id="fbBody"></div>
-    <!-- Player thinks the answer is wrong: log it for review -->
-    <div id="dispute" class="dispute hidden">
-      <button id="disputeBtn" class="dispute-btn" type="button">I was right</button>
-      <div id="disputeForm" class="hidden">
-        <label for="disputeNote" class="hint">What's wrong with this answer? (optional)</label>
-        <textarea id="disputeNote" rows="2" placeholder="e.g. That building is 2000 S West Ave, the map has it wrong"></textarea>
-        <div class="row tight">
-          <button id="disputeCancel" type="button" class="ghost">Cancel</button>
-          <button id="disputeSave" type="button">Save to log</button>
-        </div>
-      </div>
-      <div id="disputeDone" class="hint hidden">Logged for review. Thanks.</div>
-    </div>
     <button id="nextBtn" class="primary">Next</button>
   </div>
 
@@ -127,13 +109,13 @@
   </div>
 
   <script src="vendor/leaflet/leaflet.js"></script>
-  <script src="data/boundary.js?v=202611091215"></script>
-  <script src="data/districts.js?v=202611091215"></script>
-  <script src="data/network.js?v=202611091215"></script>
-  <script src="data/features.js?v=202611091215"></script>
-  <script src="data/streets.js?v=202611091215"></script>
-  <script src="data/addresses.js?v=202611091215"></script>
-  <script src="data/buildings.js?v=202611091215"></script>
-  <script src="app.js?v=202611091215"></script>
+  <script src="data/boundary.js?v=202611091300"></script>
+  <script src="data/districts.js?v=202611091300"></script>
+  <script src="data/network.js?v=202611091300"></script>
+  <script src="data/features.js?v=202611091300"></script>
+  <script src="data/streets.js?v=202611091300"></script>
+  <script src="data/addresses.js?v=202611091300"></script>
+  <script src="data/buildings.js?v=202611091300"></script>
+  <script src="app.js?v=202611091300"></script>
 </body>
 </html>
