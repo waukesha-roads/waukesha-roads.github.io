@@ -7,9 +7,10 @@
       "runtimeArgs": [
         "-m",
         "http.server",
-        "8765"
+        "8767"
       ],
-      "port": 8765
+      "port": 8767,
+      "autoPort": false
     }
   ]
 }

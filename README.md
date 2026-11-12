@@ -1,10 +1,10 @@
 # Waukesha Street Trainer
 
-A street name is shown; the player clicks that street on a map with no street names.
+A street name is shown and the player clicks that street on a map with no street names.
 After each guess the street is highlighted, names appear, and the app shows how far off the
 click was, which street was actually clicked, and the street's block ranges.
 
-**Practice aid only - not for navigation or dispatch.** Map data may be out of date or wrong;
+**Practice aid only. Not for navigation or dispatch.** Map data may be out of date or wrong.
 always rely on official maps and CAD. Provided as is, with no warranty.
 
 ## Running it
@@ -23,14 +23,14 @@ Satellite view works offline (Leaflet is bundled in `vendor/`).
 
 The generated files in `data/` that are built from OpenStreetMap and the building footprints are a
 derived database and are made available under the **ODbL 1.0**. Street-name labels after a guess
-are drawn by the app from the OpenStreetMap names; no third-party map tiles are used for them.
+are drawn by the app from the OpenStreetMap names, not from third-party map tiles.
 
 ## Files
 | File | What it is |
 |---|---|
 | `data/streets.csv` | **The street list. Edit this** (Excel works). One row per street. |
 | `data/districts.js` | Station areas (Waukesha County GIS district boundaries). |
-| `data/streets.js`, `data/network.js`, `data/boundary.js` | Generated - don't edit by hand. |
+| `data/streets.js`, `data/network.js`, `data/boundary.js` | Generated. Don't edit by hand. |
 | `tools/fetch-osm.mjs` | Re-downloads city limits + road geometry from OpenStreetMap. |
 | `tools/build-data.mjs` | Rebuilds the generated files from `streets.csv`. |
 
@@ -39,7 +39,7 @@ are drawn by the app from the OpenStreetMap names; no third-party map tiles are 
 
 | Column | Example | Notes |
 |---|---|---|
-| `name` | `W Main St` | Shown in the game. Abbreviations are fine - they're matched to the map automatically. |
+| `name` | `W Main St` | Shown in the game. Abbreviations are fine. They're matched to the map automatically. |
 | `category` | `Primary` | `Primary`, `Secondary`, `Tertiary` or `Dead end`. Tertiary courts, circles and one-way-in streets become `Dead end` automatically. |
 | `secondary_for` | `Station 1\|Station 5` | Secondary streets only: the stations whose list has it. In another station it counts as Tertiary. |
 | `district` | `Station 1` or `Station 1\|Station 2` | Optional. Blank = worked out from the map. |
@@ -51,7 +51,7 @@ Then run:
 ```
 node tools/build-data.mjs
 ```
-It lists any street it couldn't find on the map - fill in `map_name` for those.
+It lists any street it couldn't find on the map. Fill in `map_name` for those.
 
 The Primary list and per-station Secondary lists are in `tools/curated-list.txt`.
 To re-apply them after editing that file (it rewrites `category` and `secondary_for` for every row):
@@ -81,7 +81,7 @@ node tools/build-data.mjs
 Building footprints come from the Waukesha County "Structures" layer (21,650 inside the city),
 which the county sources from Microsoft's (Bing Maps) building footprints.
 They appear on the Street map once zoomed in (zoom 15+). In address mode, a click anywhere on the
-address's own building is always correct, however big the building is; 94% of addresses are linked
+address's own building is always correct, however big the building is. 94% of addresses are linked
 to a building. Refresh them with:
 ```
 node tools/fetch-buildings.mjs

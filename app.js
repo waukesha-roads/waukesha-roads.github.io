@@ -523,7 +523,7 @@
 
   function blocksHtml(s) {
     if (!s.blocks || !s.blocks.length) return '<span class="hint">not entered yet</span>';
-    return s.blocks.map((b) => (b.from != null ? `${b.from}&ndash;${b.to}` : "") + (b.label ? ` ${esc(b.label)}` : "")).join("<br>")
+    return s.blocks.map((b) => (b.from != null ? `${b.from}-${b.to}` : "") + (b.label ? ` ${esc(b.label)}` : "")).join("<br>")
       + (s.blocksAuto ? ' <span class="hint">(from county addresses)</span>' : "");
   }
 
@@ -599,7 +599,7 @@
 
     const title = $("fbTitle");
     title.className = "fb-title " + (res.correct ? "ok" : "bad");
-    title.textContent = res.correct ? "Correct!" : clickLatLng ? "Not quite" : "Here it is";
+    title.textContent = res.correct ? "Correct" : clickLatLng ? "Missed" : "Here it is";
     let html = "";
     if (clickLatLng && (!res.correct || q.addr)) {
       html += res.onBuilding
@@ -648,7 +648,7 @@
     const pct = Math.round((100 * right) / game.results.length);
     $("sumTitle").textContent = `${right} of ${game.results.length} correct (${pct}%)`;
     $("sumList").innerHTML = game.results.map((r, idx) => {
-      const detail = r.correct ? "" : r.skipped ? "skipped" : `off by ${fmtDist(r.dist)}` + (r.clickedName ? ` &middot; clicked ${esc(r.clickedName)}` : "");
+      const detail = r.correct ? "" : r.skipped ? "skipped" : `off by ${fmtDist(r.dist)}` + (r.clickedName ? `, clicked ${esc(r.clickedName)}` : "");
       return `<li data-idx="${idx}"><span class="mark ${r.correct ? "ok" : "bad"}">${r.correct ? "&#10003;" : "&#10007;"}</span>${esc(questionTitle(r.q))}
         <span class="dist">${detail}</span></li>`;
     }).join("");
