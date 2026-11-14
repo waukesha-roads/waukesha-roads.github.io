@@ -63,9 +63,25 @@ const RENAME_WAYS = {
   21656457: "Pendleton Place", // OSM calls the whole loop Pendleton Court; only the short stub is the Court
   689699499: "Pendleton Place",
 };
+// OSM misspellings, fixed to the spelling the county's 911 addresses use.
+const RENAME_NAMES = {
+  "Emsile Drive": "Emslie Drive",
+  "Fox Hil Circle": "Fox Hill Circle",
+  "Garvens Court": "Garven Court",
+  "Gunthrie Road": "Guthrie Road",
+  "Kingfisher Court": "King Fisher Court",
+  "KisdonHill Court": "Kisdon Hill Court",
+  "Rue-Rae Lane": "Rue Rae Lane",
+  "Whiterock Avenue": "White Rock Avenue",
+};
+RENAME_WAYS[21670157] = "South Grand Avenue"; // short unprefixed "Grand Avenue" piece of S Grand Ave
 const readRoads = (p) => {
   const j = read(p);
-  for (const w of j.elements) if (RENAME_WAYS[w.id] && w.tags) w.tags.name = RENAME_WAYS[w.id];
+  for (const w of j.elements) {
+    if (!w.tags) continue;
+    if (RENAME_WAYS[w.id]) w.tags.name = RENAME_WAYS[w.id];
+    else if (RENAME_NAMES[w.tags.name]) w.tags.name = RENAME_NAMES[w.tags.name];
+  }
   return j;
 };
 const roadsRaw = readRoads("raw/roads.json");
