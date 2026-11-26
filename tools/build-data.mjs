@@ -494,6 +494,12 @@ if (existsSync("raw/addresses.json")) {
   const pretty = (name) =>
     name.split(/\s+/).map((w) => (DIRS.has(w) ? w : w.charAt(0) + w.slice(1).toLowerCase())).join(" ");
   const seen = new Set();
+  // addresses never to ask (data/skip-addresses.txt), compared case- and space-insensitively
+  const skipKey = (s) => s.toUpperCase().replace(/\s+/g, " ").trim();
+  const SKIP = new Set(existsSync("data/skip-addresses.txt")
+    ? readFileSync("data/skip-addresses.txt", "utf8").split(/\r?\n/).map((l) => l.trim()).filter((l) => l && !l.startsWith("#")).map(skipKey)
+    : []);
+  const skipped = [];
   const ranges = new Map(); // street -> Map(county street name -> [min, max])
   const unmatched = new Map();
   const fixedPrefix = new Map();
@@ -523,6 +529,7 @@ if (existsSync("raw/addresses.json")) {
     }
     if (!st) { unmatched.set(a.st, (unmatched.get(a.st) || 0) + 1); continue; }
     // [label, lat, lon, building index or -1]
+    if (SKIP.has(skipKey(`${a.n}${a.suf} ${label}`))) { skipped.push(`${a.n}${a.suf} ${label}`); continue; }
     (addressIndex[st.name] ??= []).push([`${a.n}${a.suf} ${label}`, r5(a.lat), r5(a.lon), buildingFor([a.lat, a.lon])]);
     used++;
     if (!ranges.has(st)) ranges.set(st, new Map());
@@ -545,6 +552,8 @@ if (existsSync("raw/addresses.json")) {
       "// { street name: [[label, lat, lon], ...] }\n" +
       "window.ADDRESSES = " + JSON.stringify(addressIndex) + ";\n"
   );
+  console.log(`skipped addresses (data/skip-addresses.txt): ${skipped.join(", ") || "none"}` +
+    (skipped.length < SKIP.size ? ` - WARNING: ${SKIP.size - skipped.length} line(s) in the file matched no address` : ""));
   if (fixedPrefix.size) console.log("addresses given a missing direction: " + [...fixedPrefix].map(([k, n]) => `${k} (${n})`).join(", "));
   const top = [...unmatched].sort((x, y) => y[1] - x[1]);
   console.log(`addresses: ${used} matched to ${Object.keys(addressIndex).length} streets; ` +

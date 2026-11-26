@@ -1,0 +1,3 @@
+# Addresses never asked in address mode. One per line, written like the game shows them.
+# Lines starting with # are ignored. Rebuild with: node tools/build-data.mjs
+2566 River Rd

@@ -71,6 +71,10 @@ Street questions (address mode off) always accept clicks within 50 m of the road
 Block ranges for streets with no `blocks` value in the CSV are filled in automatically from these
 addresses (shown as "from county addresses"). A value typed into the CSV always wins.
 
+To stop an address from being asked (a shed, a lot with no real building), add it to
+`data/skip-addresses.txt`, one per line, written the way the game shows it (e.g. `2566 River Rd`),
+then rebuild.
+
 Refresh the address data:
 ```
 node tools/fetch-addresses.mjs
