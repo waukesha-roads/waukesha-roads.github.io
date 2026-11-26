@@ -81,6 +81,11 @@ const readRoads = (p) => {
     if (!w.tags) continue;
     if (RENAME_WAYS[w.id]) w.tags.name = RENAME_WAYS[w.id];
     else if (RENAME_NAMES[w.tags.name]) w.tags.name = RENAME_NAMES[w.tags.name];
+    // County highways that also carry a street name ("County Highway H" = River Road):
+    // use the street name, which is what addresses and people use.
+    else if (/^County Highway /.test(w.tags.name || "") && w.tags.name_1 && !/^County Highway /.test(w.tags.name_1)) {
+      w.tags.name = w.tags.name_1;
+    }
   }
   return j;
 };
